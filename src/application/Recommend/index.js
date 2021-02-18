@@ -5,6 +5,7 @@ import * as actionTypes from './store/actionCreators';
 import RecommendList from '../../components/list/';
 import Scroll from '../../baseUI/scroll/index'
 import { Content } from './style';
+import { forceCheck } from 'react-lazyload'
 
 function Recommend(props) {
   const { bannerList, recommendList } = props;
@@ -14,14 +15,14 @@ function Recommend(props) {
   useEffect(() => {
     getBannerDataDispatch();
     getRecommendListDataDispatch();
-  }, []);
+  }, [getBannerDataDispatch, getRecommendListDataDispatch]);
 
   const bannerListJS = bannerList ? bannerList.toJS() : [];
   const recommendListJS = recommendList ? recommendList.toJS() : [];
 
   return (
     <Content>
-      <Scroll>
+      <Scroll className="list" onScroll={forceCheck}>
         <div>
           <Slider bannerList={bannerListJS}></Slider>
           <RecommendList recommendList={recommendListJS}></RecommendList>
