@@ -6,15 +6,20 @@ import RecommendList from '../../components/list/';
 import Scroll from '../../baseUI/scroll/index'
 import { Content } from './style';
 import { forceCheck } from 'react-lazyload'
+import Loading from '../../baseUI/loading'
 
 function Recommend(props) {
-  const { bannerList, recommendList } = props;
+  const { bannerList, recommendList, enterLoading } = props;
 
   const { getBannerDataDispatch, getRecommendListDataDispatch } = props;
 
   useEffect(() => {
-    getBannerDataDispatch();
-    getRecommendListDataDispatch();
+    if (!bannerList.size) {
+      getBannerDataDispatch();
+    }
+    if (!recommendList.size) {
+      getRecommendListDataDispatch();
+    }
   }, [getBannerDataDispatch, getRecommendListDataDispatch]);
 
   const bannerListJS = bannerList ? bannerList.toJS() : [];
@@ -28,6 +33,7 @@ function Recommend(props) {
           <RecommendList recommendList={recommendListJS}></RecommendList>
         </div>
       </Scroll>
+      {enterLoading ? <Loading /> : null}
     </Content>
   );
 }
@@ -35,6 +41,7 @@ function Recommend(props) {
 const mapStateToProps = (state) => ({
   bannerList: state.getIn(['recommend', 'bannerList']),
   recommendList: state.getIn(['recommend', 'recommendList']),
+  enterLoading: state.getIn(['recommend', 'enterLoading'])
 });
 const mapDispatchToProps = (dispatch) => {
   return {
