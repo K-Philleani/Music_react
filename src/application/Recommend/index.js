@@ -10,7 +10,6 @@ import Loading from '../../baseUI/loading'
 
 function Recommend(props) {
   const { bannerList, recommendList, enterLoading } = props;
-
   const { getBannerDataDispatch, getRecommendListDataDispatch } = props;
 
   useEffect(() => {
@@ -33,7 +32,7 @@ function Recommend(props) {
           <RecommendList recommendList={recommendListJS}></RecommendList>
         </div>
       </Scroll>
-      {enterLoading ? <Loading /> : null}
+      <Loading show={enterLoading}></Loading>
     </Content>
   );
 }
