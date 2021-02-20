@@ -1,21 +1,56 @@
-import React, { forwardRef, useState, useEffect, useRef, useImperativeHandle } from "react"
+import React, { forwardRef, useState, useMemo, useEffect, useRef, useImperativeHandle } from "react"
 import PropTypes from "prop-types"
 import BScroll from "better-scroll"
 import styled from 'styled-components';
+import Loading from '../loading'
+import LoadingV2 from '../loading-v2'
+import { debounce } from '../../api/utils.js'
 
 const ScrollContainer = styled.div`
   width: 100%;
   height: 100%;
   overflow: hidden;
-`
+`;
+
+const PullUpLoading = styled.div`
+  position: absolute;
+  left:0; right:0;
+  bottom: 5px;
+  width: 60px;
+  height: 60px;
+  margin: auto;
+  z-index: 100;
+`;
+
+export const PullDownLoading = styled.div`
+  position: absolute;
+  left:0; right:0;
+  top: 0px;
+  height: 30px;
+  margin: auto;
+  z-index: 100;
+`;
 const Scroll = forwardRef((props, ref) => {
   const [bScroll, setBScroll] = useState();
 
   const scrollContaninerRef = useRef();
 
-  const { direction, click, refresh, bounceTop, bounceBottom } = props;
+  const { direction, click, refresh,  bounceTop, bounceBottom, pullUpLoading, pullDownLoading } = props;
 
   const { pullUp, pullDown, onScroll } = props;
+
+  const PullUpdisplayStyle = pullUpLoading ? { display: "" } : { display: "none" };
+  const PullDowndisplayStyle = pullDownLoading ? { display: "" } : { display: "none" };
+
+  let pullUpDebounce = useMemo(() => {
+    return debounce(pullUp, 300)
+  }, [pullUp]);
+  
+  let pullDownDebounce = useMemo(() => {
+    return debounce(pullDown, 300)
+  }, [pullDown]);
+
+
 
   useEffect(() => {
     const scroll = new BScroll(scrollContaninerRef.current, {
@@ -23,7 +58,7 @@ const Scroll = forwardRef((props, ref) => {
       scrollY: direction === "vertical",
       probeType: 3,
       click: click,
-      bounce: {
+      bounce:{
         top: bounceTop,
         bottom: bounceBottom
       }
@@ -32,11 +67,11 @@ const Scroll = forwardRef((props, ref) => {
     return () => {
       setBScroll(null);
     }
-    //eslint-disable-next-line
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    if (!bScroll || !onScroll) return;
+    if(!bScroll || !onScroll) return;
     bScroll.on('scroll', (scroll) => {
       onScroll(scroll);
     })
@@ -45,66 +80,71 @@ const Scroll = forwardRef((props, ref) => {
     }
   }, [onScroll, bScroll]);
 
+
   useEffect(() => {
-    if (!bScroll || !pullUp) return;
+    if(!bScroll || !pullUp) return;
     bScroll.on('scrollEnd', () => {
-      // 判断是否滑动到了底部
-      if (bScroll.y <= bScroll.maxScrollY + 100) {
-        pullUp();
+      //判断是否滑动到了底部
+      if(bScroll.y <= bScroll.maxScrollY + 100){
+        pullUpDebounce();
       }
     });
     return () => {
       bScroll.off('scrollEnd');
     }
-  }, [pullUp, bScroll]);
+  }, [pullUpDebounce, pullUp, bScroll]);
 
-  useEffect(() => {
-    if (!bScroll || !pullDown) return;
+   useEffect(() => {
+    if(!bScroll || !pullDown) return;
     bScroll.on('touchEnd', (pos) => {
-      // 判断用户的下拉动作
-      if (pos.y > 50) {
-        pullDown();
+      //判断用户的下拉动作
+      if(pos.y > 50) {
+        pullDownDebounce();
       }
     });
     return () => {
       bScroll.off('touchEnd');
     }
-  }, [pullDown, bScroll]);
-
+  }, [pullDownDebounce, pullDown, bScroll]);
 
   useEffect(() => {
-    if (refresh && bScroll) {
+    if(refresh && bScroll){
       bScroll.refresh();
     }
   });
 
   useImperativeHandle(ref, () => ({
     refresh() {
-      if (bScroll) {
+      if(bScroll) {
         bScroll.refresh();
         bScroll.scrollTo(0, 0);
       }
     },
     getBScroll() {
-      if (bScroll) {
+      if(bScroll) {
         return bScroll;
       }
     }
   }));
 
+  
 
   return (
     <ScrollContainer ref={scrollContaninerRef}>
-      {props.children}
-    </ScrollContainer>
+    {props.children}
+    {/* 滑到底部加载动画 */}
+    <PullUpLoading style={ PullUpdisplayStyle }><Loading></Loading></PullUpLoading>
+    {/* 顶部下拉刷新动画 */}
+    <PullDownLoading style={ PullDowndisplayStyle }><LoadingV2></LoadingV2></PullDownLoading>
+  </ScrollContainer>
   );
 })
 
 Scroll.defaultProps = {
-  direction: "vertical",
+ direction: "vertical",
   click: true,
   refresh: true,
-  onScroll: null,
+  onScroll:null,
   pullUpLoading: false,
   pullDownLoading: false,
   pullUp: null,
