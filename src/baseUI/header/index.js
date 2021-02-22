@@ -24,12 +24,45 @@ const HeaderContainer = styled.div`
   }
 `
 
+const MarqueeWrapper = styled.div`
+  .Marquee {
+      width: 100%;
+      height: 35px;
+      overflow: hidden;
+      position: relative;
+      white-space: nowrap;
+    }
+    .text {
+      position: absolute;
+      animation: marquee 10s linear infinite;
+    }
+    @keyframes marquee {
+      from {
+       left: 100%;
+      }
+      to {
+        left: -100%
+      }
+    }
+    @keyframes marquee {
+      from {
+        transform: translateX(100%);
+      }
+      to {
+        transform: translateX(-100%);
+    }
+ }
+`
+
 const Header = React.forwardRef ((props, ref) => {
-  const { handleClick, title} = props;
+  const { handleClick, title, isMarquee } = props;
     return (
     <HeaderContainer ref={ref}>
       <i className="iconfont back"  onClick={handleClick}>&#xe655;</i>
-      <h1>{title}</h1>
+      {
+        isMarquee ? <MarqueeWrapper><h1 className="Marquee text">{title}</h1></MarqueeWrapper>:
+        <h1>{title}</h1>
+      }
     </HeaderContainer>
     )
 })
@@ -37,11 +70,13 @@ const Header = React.forwardRef ((props, ref) => {
 Header.defaultProps = {
   handleClick: () => {},
   title: "标题",
+  isMarquee: false
 };
 
 Header.propTypes = {
   handleClick: PropTypes.func,
   title: PropTypes.string,
+  isMarquee: PropTypes.bool
 };
 
 export default React.memo(Header);

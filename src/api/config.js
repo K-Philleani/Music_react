@@ -7,6 +7,7 @@ const axiosInstance = axios.create({
   baseURL: baseUrl
 })
 
+export const HEADER_HEIGHT = 45;
 
 axiosInstance.interceptors.response.use(
   res => res.data,
