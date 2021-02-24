@@ -1,11 +1,14 @@
-import React, { memo, useState, useRef, useCallback } from 'react';
+import React, { memo, useState, useRef, useCallback, useEffect } from 'react';
 import { Container, Menu, TopDesc, SongList, SongItem } from './style'
 import { CSSTransition } from 'react-transition-group'
 import Header from '../../baseUI/header'
 import Scroll from '../../baseUI/scroll'
-import { getName, getCount } from '../../api/utils.js'
+import { getName, getCount, isEmptyObject } from '../../api/utils.js'
 import style from "../../assets/global-style";
 import { HEADER_HEIGHT } from '../../api/config';
+import { connect } from 'react-redux'
+import { getAlbumList, changeEnterLoading } from './store/actionCreators';
+import Loading from '../../baseUI/loading'
 
 
 const Album = (props) => {
@@ -13,89 +16,17 @@ const Album = (props) => {
   const [title, setTitle] = useState("歌单");
   const [isMarquee, setIsMarquee] = useState(false);
   const headerEl = useRef();
-  // mock
-  const currentAlbum = {
-     creator: {
-      avatarUrl: "http://p1.music.126.net/O9zV6jeawR43pfiK2JaVSw==/109951164232128905.jpg",
-      nickname: "浪里推舟"
-    },
-    coverImgUrl: "http://p2.music.126.net/ecpXnH13-0QWpWQmqlR0gw==/109951164354856816.jpg",
-    subscribedCount: 2010711,
-    name: "听完就睡，耳机是天黑以后柔软的梦境",
-    tracks:[
-      {
-        name: "我真的受伤了",
-        ar: [{name: "张学友"}, {name: "周华健"}],
-        al: {
-          name: "学友 热"
-        }
-      },
-      {
-        name: "我真的受伤了",
-        ar: [{name: "张学友"}, {name: "周华健"}],
-        al: {
-          name: "学友 热"
-        }
-      },
-      {
-        name: "我真的受伤了",
-        ar: [{name: "张学友"}, {name: "周华健"}],
-        al: {
-          name: "学友 热"
-        }
-      },
-      {
-        name: "我真的受伤了",
-        ar: [{name: "张学友"}, {name: "周华健"}],
-        al: {
-          name: "学友 热"
-        }
-      },
-      {
-        name: "我真的受伤了",
-        ar: [{name: "张学友"}, {name: "周华健"}],
-        al: {
-          name: "学友 热"
-        }
-      },
-      {
-        name: "我真的受伤了",
-        ar: [{name: "张学友"}, {name: "周华健"}],
-        al: {
-          name: "学友 热"
-        }
-      },
-      {
-        name: "我真的受伤了",
-        ar: [{name: "张学友"}, {name: "周华健"}],
-        al: {
-          name: "学友 热"
-        }
-      },
-      {
-        name: "我真的受伤了",
-        ar: [{name: "张学友"}, {name: "周华健"}],
-        al: {
-          name: "学友 热"
-        }
-      },
-      {
-        name: "我真的受伤了",
-        ar: [{name: "张学友"}, {name: "周华健"}],
-        al: {
-          name: "学友 热"
-        }
-      },
-      {
-        name: "我真的受伤了",
-        ar: [{name: "张学友"}, {name: "周华健"}],
-        al: {
-          name: "学友 热"
-        }
-      },
-    ]
-  }
 
+  const { currentAlbum: currentAlbumImmutable, enterLoading } = props;
+  const { getAlbumDataDispatch } = props;
+  const id = props.match.params.id;
+
+  useEffect (() => {
+    getAlbumDataDispatch(id);
+  }, [getAlbumDataDispatch, id]);
+
+  let currentAlbum = currentAlbumImmutable.toJS ();
+ 
    const handleScroll = useCallback((pos) => {
     let minScrollY = -HEADER_HEIGHT;
     let percent = Math.abs(pos.y / minScrollY);
@@ -129,7 +60,9 @@ const Album = (props) => {
     >
       <Container>
         <Header ref={headerEl} title={title} handleClick={handleBack} isMarquee={isMarquee}></Header>
-        <Scroll bounceTop={false} onScroll={handleScroll}>
+        {
+          !isEmptyObject(currentAlbum) ? (
+            <Scroll bounceTop={false} onScroll={handleScroll}>
           <div>
             <TopDesc background={currentAlbum.coverImgUrl}>
               <div className="background">
@@ -202,9 +135,26 @@ const Album = (props) => {
             </SongList>
           </div>
         </Scroll>
+          ) : null
+        }
+        <Loading show={enterLoading}></Loading>
       </Container>
     </CSSTransition>
   );
 }
 
-export default memo(Album);
+const mapStateToProps = state => ({
+  currentAlbum: state.getIn(['album', 'currentAlbum']),
+  enterLoading: state.getIn(['album', 'enterLoading'])
+})
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getAlbumDataDispatch(id) {
+      dispatch(changeEnterLoading(true));
+      dispatch(getAlbumList(id));
+    },
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(memo(Album));
