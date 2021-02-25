@@ -1,5 +1,5 @@
-import styled from 'styled-components'
-import style from '../../assets/global-style'
+import styled from 'styled-components';
+import style from '../../assets/global-style';
 
 export const Container = styled.div`
   position: fixed;
@@ -12,29 +12,28 @@ export const Container = styled.div`
   overflow: hidden;
   background: #f2f3f4;
   transform-origin: right bottom;
-  &.fly-enter, &.fly-appear {
-    transform: rotateZ (30deg) translate3d (100%, 0, 0);
+  &.fly-enter, &.fly-appear{
+    transform: rotateZ(30deg) translate3d(100%, 0, 0);
   }
-  &.fly-enter-active, &.fly-appear-active {
+  &.fly-enter-active, &.fly-appear-active{
     transition: transform .3s;
-    transform: rotateZ (0deg) translate3d (0, 0, 0);
+    transform: rotateZ(0deg) translate3d(0, 0, 0);
   }
-  &.fly-exit {
-    transform: rotateZ (0deg) translate3d (0, 0, 0);
+  &.fly-exit{
+    transform: rotateZ(0deg) translate3d(0, 0, 0);
   }
-  &.fly-exit-active {
+  &.fly-exit-active{
     transition: transform .3s;
-    transform: rotateZ (30deg) translate3d (100%, 0, 0);
+    transform: rotateZ(30deg) translate3d(100%, 0, 0);
   }
 `
-
 export const ImgWrapper = styled.div`
   position: relative;
   width: 100%;
   height: 0;
   padding-top: 75%;
   transform-origin: top;
-  background: url (${props => props.bgUrl});
+  background: url(${props => props.bgUrl});
   background-size: cover;
   z-index: 50;
   .filter {
@@ -43,7 +42,7 @@ export const ImgWrapper = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba (7, 17, 27, 0.3);
+    background: rgba(7, 17, 27, 0.3);
   }
 `
 
@@ -62,7 +61,7 @@ export const CollectButton = styled.div`
   text-align: center;
   font-size: 0;
   line-height: 40px;
-  .iconfont {
+  .iconfont{
     display: inline-block;
     margin-right: 10px;
     font-size: 12px;
@@ -82,13 +81,14 @@ export const SongListWrapper = styled.div`
   left: 0;
   bottom: 0;
   right: 0;
-  >div {
+  >div{
     position: absolute;
     left: 0;
     width: 100%;
     overflow: visible;
   }
 `
+
 export const BgLayer = styled.div`
   position: absolute;
   top: 0;
