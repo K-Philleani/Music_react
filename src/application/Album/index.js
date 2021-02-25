@@ -45,29 +45,18 @@ const Album = (props) => {
     }
   }, [currentAlbum]);
 
-  const handleBack = () => {
+  const handleBack = useCallback (() => {
     setShowStatus (false);
-  };
+  }, []);
 
-  return (
-    <CSSTransition
-      in={showStatus}
-      timeout={300}
-      classNames="fly"
-      appear={true}
-      unmountOnExit
-      onExited={props.history.goBack}
-    >
-      <Container>
-        <Header ref={headerEl} title={title} handleClick={handleBack} isMarquee={isMarquee}></Header>
-        {
-          !isEmptyObject(currentAlbum) ? (
-            <Scroll bounceTop={false} onScroll={handleScroll}>
-          <div>
-            <TopDesc background={currentAlbum.coverImgUrl}>
-              <div className="background">
-                <div className="filter"></div>
-              </div>
+  const renderTopDesc = () => {
+    return (
+      <TopDesc 
+        background={currentAlbum.coverImgUrl}
+      >
+        <div className="background">
+          <div className="filter"></div>
+            </div>
               <div className="img_wrapper">
                 <div className="decorate"></div>
                 <img src={currentAlbum.coverImgUrl} alt=""/>
@@ -85,26 +74,36 @@ const Album = (props) => {
                   <div className="name">{currentAlbum.creator.nickname}</div>
                 </div>
               </div>
-            </TopDesc>
-            <Menu>
-              <div>
-                <i className="iconfont">&#xe6ad;</i>
-                评论
-              </div>
-              <div>
-                <i className="iconfont">&#xe86f;</i>
-                点赞
-              </div>
-              <div>
-                <i className="iconfont">&#xe62d;</i>
-                收藏
-              </div>
-              <div>
-                <i className="iconfont">&#xe606;</i>
-                更多
-              </div>
-            </Menu>
-            <SongList>
+      </TopDesc>
+    )
+  }
+
+  const renderMenu = () => {
+    return (
+      <Menu>
+        <div>
+          <i className="iconfont">&#xe6ad;</i>
+            评论
+        </div>
+        <div>
+          <i className="iconfont">&#xe86f;</i>
+            点赞
+        </div>
+        <div>
+          <i className="iconfont">&#xe62d;</i>
+            收藏
+        </div>
+        <div>
+          <i className="iconfont">&#xe606;</i>
+            更多
+        </div>
+        </Menu>
+    )
+  }
+
+  const renderSongList = () => {
+    return (
+       <SongList>
               <div className="first_line">
                 <div className="play_all">
                   <i className="iconfont">&#xe6e3;</i>
@@ -133,6 +132,27 @@ const Album = (props) => {
                 }
               </SongItem>
             </SongList>
+    )
+  }
+
+  return (
+    <CSSTransition
+      in={showStatus}
+      timeout={300}
+      classNames="fly"
+      appear={true}
+      unmountOnExit
+      onExited={props.history.goBack}
+    >
+      <Container>
+        <Header ref={headerEl} title={title} handleClick={handleBack} isMarquee={isMarquee}></Header>
+        {
+          !isEmptyObject(currentAlbum) ? (
+            <Scroll bounceTop={false} onScroll={handleScroll}>
+          <div>
+            { renderTopDesc() }
+            { renderMenu() }
+            { renderSongList() }
           </div>
         </Scroll>
           ) : null
