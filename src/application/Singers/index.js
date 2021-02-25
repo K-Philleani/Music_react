@@ -17,6 +17,7 @@ import {
 } from './store/actionCreators';
 import Loading from '../../baseUI/loading';
 import { CategoryDataContext, CHANGE_ALPHA, CHANGE_CATEGORY } from './data'
+import { renderRoutes } from 'react-router-config'
 
 const Singers = (props) => {
   // let [category, setCategory] = useState ('');
@@ -51,6 +52,10 @@ let handleUpdateCatetory = (val) => {
     pullDownRefreshDispatch(category, alpha);
   };
 
+  const enterDetail = (id)  => {
+    props.history.push (`/singers/${id}`);
+  };
+
 
   const renderSingerList = () => {
     const list = singerList ? singerList.toJS(): [];
@@ -60,7 +65,7 @@ let handleUpdateCatetory = (val) => {
         {
           list.map((item, index) => {
             return (
-              <ListItem key={item.accountId+""+index}>
+              <ListItem key={item.accountId+""+index} onClick={() => enterDetail(item.id)}>
                 <div className="img_wrapper">
                   <LazyLoad placeholder={<img width="100%" height="100%" src={require('./singer.png')} alt="music"/>}>
                     <img src={`${item.picUrl}?param=300x300`} width="100%" height="100%" alt="music"/>
@@ -103,6 +108,7 @@ let handleUpdateCatetory = (val) => {
       </Scroll>
       <Loading show={enterLoading}></Loading>
       </ListContainer>
+       { renderRoutes(props.route.routes) }
     </div>
     
   )
