@@ -9,7 +9,8 @@ import { HEADER_HEIGHT } from '../../api/config';
 import { connect } from 'react-redux'
 import { getAlbumList, changeEnterLoading } from './store/actionCreators';
 import Loading from '../../baseUI/loading'
-
+import MusicNote from "../../baseUI/music-note/index";
+import SongsList from '../SongsList'
 
 const Album = (props) => {
   const [showStatus, setShowStatus] = useState(true)
@@ -20,6 +21,11 @@ const Album = (props) => {
   const { currentAlbum: currentAlbumImmutable, enterLoading } = props;
   const { getAlbumDataDispatch } = props;
   const id = props.match.params.id;
+  const musicNoteRef = useRef ();
+
+  const musicAnimation = (x, y) => {
+    musicNoteRef.current.startAnimation ({ x, y });
+  };
 
   useEffect (() => {
     getAlbumDataDispatch(id);
@@ -152,12 +158,19 @@ const Album = (props) => {
           <div>
             { renderTopDesc() }
             { renderMenu() }
-            { renderSongList() }
+           <SongsList
+                  songs={currentAlbum.tracks}
+                  collectCount={currentAlbum.subscribedCount}
+                  showCollect={true}
+                  showBackground={true}
+                  musicAnimation={musicAnimation}
+                ></SongsList>
           </div>
         </Scroll>
           ) : null
         }
         <Loading show={enterLoading}></Loading>
+        <MusicNote ref={musicNoteRef}></MusicNote>
       </Container>
     </CSSTransition>
   );

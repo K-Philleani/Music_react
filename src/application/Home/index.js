@@ -26,7 +26,7 @@ const Home = (props) => {
         </NavLink>
         <NavLink to="/rank" activeClassName="selected">
           <TabItem>
-            <span > 排行榜 </span>
+            <span> 排行榜 </span>
           </TabItem>
         </NavLink>
       </Tab>
